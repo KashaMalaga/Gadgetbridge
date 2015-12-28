@@ -34,7 +34,7 @@ import nodomain.freeyourgadget.gadgetbridge.util.GB;
 
 public class DiscoveryActivity extends Activity implements AdapterView.OnItemClickListener {
     private static final Logger LOG = LoggerFactory.getLogger(DiscoveryActivity.class);
-    private static final long SCAN_DURATION = 60000; // 60s
+    private static final long SCAN_DURATION = 10000; // 10s
 
     private final Handler handler = new Handler();
 
