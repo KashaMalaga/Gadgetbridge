@@ -7,8 +7,10 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.widget.Toast;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -25,6 +27,7 @@ import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
 
 public class DeviceHelper {
     private static final DeviceHelper instance = new DeviceHelper();
+    private static final Logger LOG = LoggerFactory.getLogger(DeviceHelper.class);
 
     public static DeviceHelper getInstance() {
         return instance;
@@ -70,9 +73,14 @@ public class DeviceHelper {
             Set<BluetoothDevice> pairedDevices = btAdapter.getBondedDevices();
             DeviceHelper deviceHelper = DeviceHelper.getInstance();
             for (BluetoothDevice pairedDevice : pairedDevices) {
-                GBDevice device = deviceHelper.toSupportedDevice(pairedDevice);
-                if (device != null) {
-                    availableDevices.add(device);
+                try {
+                    GBDevice device = deviceHelper.toSupportedDevice(pairedDevice);
+                    if (device != null) {
+                        availableDevices.add(device);
+                    }
+                }catch (Exception e)
+                {
+                    LOG.error("Error: "+ e.getMessage());
                 }
             }
 
@@ -96,7 +104,10 @@ public class DeviceHelper {
     }
 
     public GBDevice toSupportedDevice(BluetoothDevice device) {
-        GBDeviceCandidate candidate = new GBDeviceCandidate(device, GBDevice.RSSI_UNKNOWN);
+        try
+        {
+            GBDeviceCandidate candidate = new GBDeviceCandidate(device, GBDevice.RSSI_UNKNOWN);
+
         if (coordinator != null && coordinator.supports(candidate)) {
             return new GBDevice(device.getAddress(), device.getName(), coordinator.getDeviceType());
         }
@@ -105,6 +116,10 @@ public class DeviceHelper {
                 return new GBDevice(device.getAddress(), device.getName(), coordinator.getDeviceType());
             }
         }
+        }catch(Exception e)
+            {
+                LOG.error("Error: " + e.getMessage());
+            }
         return null;
     }
 

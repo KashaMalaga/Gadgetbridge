@@ -88,6 +88,7 @@ public class MiBandSupport extends AbstractBTLEDeviceSupport {
         addSupportedService(GattService.UUID_SERVICE_GENERIC_ACCESS);
         addSupportedService(GattService.UUID_SERVICE_GENERIC_ATTRIBUTE);
         addSupportedService(MiBandService.UUID_SERVICE_MIBAND_SERVICE);
+        addSupportedService(MiBandService.UUID_SERVICE_HEART_RATE);
         addSupportedService(GattService.UUID_SERVICE_IMMEDIATE_ALERT);
     }
 
@@ -103,7 +104,8 @@ public class MiBandSupport extends AbstractBTLEDeviceSupport {
                 .setCurrentTime(builder)
                 .requestBatteryInfo(builder)
                 .setInitialized(builder);
-
+        heartrate(builder)
+        .requestHRInfo(builder);
         return builder;
     }
 
@@ -233,6 +235,30 @@ public class MiBandSupport extends AbstractBTLEDeviceSupport {
         return this;
     }
 
+    private MiBandSupport requestHRInfo(TransactionBuilder builder) {
+        LOG.debug("Requesting HR Info!");
+        BluetoothGattCharacteristic HRInfo = getCharacteristic(MiBandService.UUID_CHAR_HEART_RATE_MEASUREMENT);
+        builder.read(HRInfo);
+        BluetoothGattCharacteristic HR_Point = getCharacteristic(GattCharacteristic.UUID_CHARACTERISTIC_HEART_RATE_CONTROL_POINT);
+        builder.read(HR_Point);
+        return this;
+    }
+    /**
+     * Part of HR test. Do not call manually.
+     *
+     * @param transaction
+     * @return
+     */
+    private MiBandSupport heartrate(TransactionBuilder transaction) {
+        LOG.info("Attempting to read HR ...");
+        BluetoothGattCharacteristic characteristic = getCharacteristic(MiBandService.UUID_CHAR_HEART_RATE_MEASUREMENT);
+        if (characteristic != null) {
+            transaction.write(characteristic, new byte[]{MiBandService.COMMAND_SET__HR_CONTINUOUS});
+        } else {
+            LOG.info("Unable to read HR from  MI device -- characteristic not available");
+        }
+        return this;
+    }
     /**
      * Part of device initialization process. Do not call manually.
      *

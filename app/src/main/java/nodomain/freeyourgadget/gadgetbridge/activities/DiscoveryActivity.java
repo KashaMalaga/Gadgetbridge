@@ -138,7 +138,9 @@ public class DiscoveryActivity extends Activity implements AdapterView.OnItemCli
 
         registerReceiver(bluetoothReceiver, bluetoothIntents);
 
-        startDiscovery();
+            startDiscovery();
+
+
     }
 
     @Override
@@ -196,25 +198,33 @@ public class DiscoveryActivity extends Activity implements AdapterView.OnItemCli
             LOG.warn("Not starting discovery, because already scanning.");
             return;
         }
+
         startDiscovery(Scanning.SCANNING_BT);
     }
 
     private void startDiscovery(Scanning what) {
-        LOG.info("Starting discovery: " + what);
-        discoveryStarted(what); // just to make sure
-        if (ensureBluetoothReady()) {
-            if (what == Scanning.SCANNING_BT) {
-                startBTDiscovery();
-            } else if (what == Scanning.SCANNING_BTLE) {
-                if (GB.supportsBluetoothLE()) {
-                    startBTLEDiscovery();
-                } else {
-                    discoveryFinished();
+        try {
+            LOG.info("Starting discovery: " + what);
+            discoveryStarted(what); // just to make sure
+            if (ensureBluetoothReady()) {
+                if (what == Scanning.SCANNING_BT) {
+                    startBTDiscovery();
+                } else if (what == Scanning.SCANNING_BTLE) {
+                    if (GB.supportsBluetoothLE()) {
+                        startBTLEDiscovery();
+                    } else {
+                        discoveryFinished();
+                    }
                 }
+            } else {
+                discoveryFinished();
+                Toast.makeText(this, "Enable Bluetooth to discover devices.", Toast.LENGTH_LONG).show();
             }
-        } else {
-            discoveryFinished();
-            Toast.makeText(this, "Enable Bluetooth to discover devices.", Toast.LENGTH_LONG).show();
+        }
+        catch( Exception e)
+        {
+            LOG.error("ERROR: " + e.getMessage());
+
         }
     }
 
@@ -223,6 +233,8 @@ public class DiscoveryActivity extends Activity implements AdapterView.OnItemCli
     }
 
     private void stopDiscovery() {
+        try
+        {
         LOG.info("Stopping discovery");
         if (isScanning()) {
             Scanning wasScanning = isScanning;
@@ -236,6 +248,12 @@ public class DiscoveryActivity extends Activity implements AdapterView.OnItemCli
                 stopBTLEDiscovery();
             }
             handler.removeMessages(0, stopRunnable);
+        }
+        }
+        catch( Exception e)
+        {
+            LOG.error("ERROR: " + e.getMessage());
+
         }
     }
 
