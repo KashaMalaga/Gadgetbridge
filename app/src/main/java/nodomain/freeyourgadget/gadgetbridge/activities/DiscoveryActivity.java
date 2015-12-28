@@ -61,7 +61,11 @@ public class DiscoveryActivity extends Activity implements AdapterView.OnItemCli
                 case BluetoothDevice.ACTION_FOUND: {
                     BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                     short rssi = intent.getShortExtra(BluetoothDevice.EXTRA_RSSI, GBDevice.RSSI_UNKNOWN);
-                    handleDeviceFound(device, rssi);
+                    try{
+                    handleDeviceFound(device, rssi);}
+                    catch(Exception e){
+                        LOG.error("Error handleDeviceFound: " + e.getMessage());
+                    }
                     break;
                 }
                 case BluetoothDevice.ACTION_BOND_STATE_CHANGED: {
@@ -81,7 +85,11 @@ public class DiscoveryActivity extends Activity implements AdapterView.OnItemCli
     private final BluetoothAdapter.LeScanCallback leScanCallback = new BluetoothAdapter.LeScanCallback() {
         @Override
         public void onLeScan(BluetoothDevice device, int rssi, byte[] scanRecord) {
-            handleDeviceFound(device, (short) rssi);
+            try {
+                handleDeviceFound(device, (short) rssi);
+            }catch(Exception e){
+                LOG.error("Error leScanCallback: "+ e.getMessage());
+            }
         }
     };
 

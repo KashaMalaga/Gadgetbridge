@@ -129,20 +129,18 @@ public class ControlCenter extends Activity {
         {
             if (this.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
                 {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-                    {
-                            requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSION);
-                            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION);
-                            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION);
-                            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION);
-                            requestPermissions(new String[]{Manifest.permission.READ_PHONE_STATE}, PERMISSION);
-                            requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, PERMISSION);
-                            requestPermissions(new String[]{Manifest.permission.READ_CALENDAR}, PERMISSION);
-                            requestPermissions(new String[]{Manifest.permission.READ_SMS}, PERMISSION);
-                            requestPermissions(new String[]{Manifest.permission.SEND_SMS}, PERMISSION);
-                    }
+                    requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSION);
+                    requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION);
+                    requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION);
+                    requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION);
+                    requestPermissions(new String[]{Manifest.permission.PROCESS_OUTGOING_CALLS}, PERMISSION);
+                    requestPermissions(new String[]{Manifest.permission.CALL_PHONE}, PERMISSION);
+                    requestPermissions(new String[]{Manifest.permission.READ_PHONE_STATE}, PERMISSION);
+                    requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, PERMISSION);
+                    requestPermissions(new String[]{Manifest.permission.READ_CALENDAR}, PERMISSION);
+                    requestPermissions(new String[]{Manifest.permission.READ_SMS}, PERMISSION);
+                    requestPermissions(new String[]{Manifest.permission.SEND_SMS}, PERMISSION);
                 }
-
         }
     }
 
