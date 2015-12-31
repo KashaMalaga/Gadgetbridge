@@ -48,6 +48,7 @@ public class DebugActivity extends Activity {
     private Button setMusicInfoButton;
     private Button setTimeButton;
     private Button rebootButton;
+    private Button HearRateButton;
     private Button exportDBButton;
     private Button importDBButton;
     private Button deleteDBButton;
@@ -167,6 +168,13 @@ public class DebugActivity extends Activity {
             @Override
             public void onClick(View v) {
                 GBApplication.deviceService().onReboot();
+            }
+        });
+        HearRateButton = (Button) findViewById(R.id.HearRateButton);
+        HearRateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                GBApplication.deviceService().onHearRateTest();
             }
         });
 

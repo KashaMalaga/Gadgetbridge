@@ -104,8 +104,8 @@ public class MiBandSupport extends AbstractBTLEDeviceSupport {
                 .setCurrentTime(builder)
                 .requestBatteryInfo(builder)
                 .setInitialized(builder);
-        heartrate(builder)
-        .requestHRInfo(builder);
+       // heartrate(builder)
+       // .requestHRInfo(builder);
         return builder;
     }
 
@@ -189,6 +189,9 @@ public class MiBandSupport extends AbstractBTLEDeviceSupport {
     }
 
     static final byte[] reboot = new byte[]{MiBandService.COMMAND_REBOOT};
+
+    static final byte[] HeartMode = new byte[]{MiBandService.COMMAND_SET_HR_MANUAL};
+
     static final byte[] startRealTimeStepsNotifications = new byte[]{MiBandService.COMMAND_SET_REALTIME_STEPS_NOTIFICATION, 1};
     static final byte[] stopRealTimeStepsNotifications = new byte[]{MiBandService.COMMAND_SET_REALTIME_STEPS_NOTIFICATION, 0};
 
@@ -235,7 +238,7 @@ public class MiBandSupport extends AbstractBTLEDeviceSupport {
         return this;
     }
 
-    private MiBandSupport requestHRInfo(TransactionBuilder builder) {
+   /* private MiBandSupport requestHRInfo(TransactionBuilder builder) {
         LOG.debug("Requesting HR Info!");
         BluetoothGattCharacteristic HRInfo = getCharacteristic(MiBandService.UUID_CHAR_HEART_RATE_MEASUREMENT);
         builder.read(HRInfo);
@@ -243,12 +246,12 @@ public class MiBandSupport extends AbstractBTLEDeviceSupport {
         builder.read(HR_Point);
         return this;
     }
-    /**
+    *//**
      * Part of HR test. Do not call manually.
      *
      * @param transaction
      * @return
-     */
+     *//*
     private MiBandSupport heartrate(TransactionBuilder transaction) {
         LOG.info("Attempting to read HR ...");
         BluetoothGattCharacteristic characteristic = getCharacteristic(MiBandService.UUID_CHAR_HEART_RATE_MEASUREMENT);
@@ -258,7 +261,7 @@ public class MiBandSupport extends AbstractBTLEDeviceSupport {
             LOG.info("Unable to read HR from  MI device -- characteristic not available");
         }
         return this;
-    }
+    }*/
     /**
      * Part of device initialization process. Do not call manually.
      *
@@ -507,7 +510,16 @@ public class MiBandSupport extends AbstractBTLEDeviceSupport {
             LOG.error("Unable to reboot MI", ex);
         }
     }
-
+    @Override
+    public void onHearRateTest() {
+        try {
+            TransactionBuilder builder = performInitialized("HeartRateTest");
+            builder.write(getCharacteristic(MiBandService.UUID_CHAR_HEART_RATE_CONTROL_POINT), HeartMode);
+            builder.queue(getQueue());
+        } catch (IOException ex) {
+            LOG.error("Unable to read HearRate in  MI1S", ex);
+        }
+    }
     @Override
     public void onFindDevice(boolean start) {
         isLocatingDevice = start;
@@ -627,7 +639,12 @@ public class MiBandSupport extends AbstractBTLEDeviceSupport {
             handleNotificationNotif(characteristic.getValue());
         } else if (MiBandService.UUID_CHARACTERISTIC_REALTIME_STEPS.equals(characteristicUUID)) {
             handleRealtimeSteps(characteristic.getValue());
-        } else {
+        } else if (MiBandService.UUID_CHARACTERISTIC_REALTIME_STEPS.equals(characteristicUUID)) {
+        handleRealtimeSteps(characteristic.getValue());
+         } else if (MiBandService.UUID_CHAR_HEART_RATE_MEASUREMENT.equals(characteristicUUID)) {
+            logMessageContent(characteristic.getValue());
+        }
+        else {
             LOG.info("Unhandled characteristic changed: " + characteristicUUID);
             logMessageContent(characteristic.getValue());
         }
@@ -645,8 +662,8 @@ public class MiBandSupport extends AbstractBTLEDeviceSupport {
             handleDeviceName(characteristic.getValue(), status);
         } else if (MiBandService.UUID_CHARACTERISTIC_BATTERY.equals(characteristicUUID)) {
             handleBatteryInfo(characteristic.getValue(), status);
-        } else if (MiBandService.UUID_CHARACTERISTIC_REALTIME_STEPS.equals(characteristicUUID)) {
-            handleRealtimeSteps(characteristic.getValue());
+        } else if (MiBandService.UUID_CHAR_HEART_RATE_MEASUREMENT.equals(characteristicUUID)) {
+            logMessageContent(characteristic.getValue());
         } else {
             LOG.info("Unhandled characteristic read: "+ characteristicUUID);
             logMessageContent(characteristic.getValue());
